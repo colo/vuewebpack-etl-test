@@ -7,7 +7,8 @@ import VueResource from 'vue-resource'
 Vue.use(VueResource)
 
 
-Vue.http.options.root = 'http://192.168.0.180:5984'
+//Vue.http.options.root = 'http://192.168.0.180:5984'
+Vue.http.options.root = 'http://127.0.0.1:5984'
 
 export default new Class({
 	Implements: [Options, Events],
@@ -27,13 +28,28 @@ export default new Class({
 	 * just for compatibility for now
 	 * 
 	 * */
-	 
+	
+	options: {
+		requests : {
+			//once: [
+				//{ api: { get: {uri: ''} } },
+			//],
+			periodical: [
+				//{ api: { get: {uri: ''} } },
+				function(){
+					console.log('my periodical func')
+				},
+			],
+			
+		},
+	},
 	initialize(options){
 		var self = this;
 		console.log('init');
 		this.setOptions(options);
 		
-		self.fireEvent('onPeriodicalDoc', {key: 'value'});
+		//self.fireEvent('onPeriodicalDoc', {key: 'value'});
+		//this.fireEvent(this.ON_ONCE_DOC, {key: 'value'});
 		
 		let instance = new Vue({
 			data: function(){
@@ -87,10 +103,11 @@ export default new Class({
 						this.freemem = response.body.rows[0].doc.data['freemem'];
 						this.totalmem = response.body.rows[0].doc.data['totalmem'];
 						
-						self.fireEvent('onPeriodicalDoc', response.body);
+						self.fireEvent('onPeriodicalDoc', [response.body, {type: 'periodical', input_type: this, app: null}]);
 						
 					}, response => {
 						console.log(response);
+						self.fireEvent('onPeriodicalDocError', response.body);
 						// error callback
 					});
 				}
