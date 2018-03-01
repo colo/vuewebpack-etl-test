@@ -36,9 +36,29 @@ module.exports = {
         options: {
           name: '[name].[ext]?[hash]'
         }
+      },
+      /**
+       * for npm 'request' (https://github.com/request/request/issues/1529)
+       * */
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
       }
     ]
   },
+  /**
+	 * for npm 'request' (https://github.com/request/request/issues/1529)
+	 * */
+  node: {
+    console: true,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  },
+  /*target: 'node',
+  externals: {
+		request: 'request'
+	},*/
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
