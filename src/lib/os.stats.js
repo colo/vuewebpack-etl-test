@@ -30,15 +30,20 @@ export default new Class({
 	 * */
 	
 	options: {
+		id: 'myPoller',
+		
 		requests : {
 			//once: [
 				//{ api: { get: {uri: ''} } },
 			//],
 			periodical: [
 				//{ api: { get: {uri: ''} } },
-				function(){
-					console.log('my periodical func')
+				{
+					myFunc : function(){
+						console.log('my periodical func')
+					},
 				},
+				
 			],
 			
 		},
