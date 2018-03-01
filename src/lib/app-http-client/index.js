@@ -386,8 +386,8 @@ var AppHttpClient = new Class({
 							request = this.request[verb](
 								merged,
 								function(err, resp, body){
-									//console.log('--default callback---');
-									//console.log(arguments);
+									console.log('--default callback---');
+									console.log(arguments);
 									
 									if(err){
 										this.fireEvent(this.ON_CONNECT_ERROR, {options: merged, uri: options.uri, route: route.path, error: err });
@@ -396,6 +396,7 @@ var AppHttpClient = new Class({
 										this.fireEvent(this.ON_CONNECT, {options: merged, uri: options.uri, route: route.path, response: resp, body: body });
 									}
 
+									throw new Error('pipeline/input/poller fires an event each time: fix!');
 									
 									if(typeof(callback_alt) == 'function' || callback_alt instanceof Function){
 										var profile = 'ID['+this.options.id+']:METHOD['+verb+']:PATH['+merged.uri+']:CALLBACK[*callback_alt*]';
@@ -438,7 +439,7 @@ var AppHttpClient = new Class({
 					
 				}
 				
-				return request;
+				//return request;
 				
 			}.bind(this, verb, this[verb]);//copy the original function if there are func like this.get, this.post, etc
 			

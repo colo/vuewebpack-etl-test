@@ -22,7 +22,7 @@ pipelines.push(new Pipeline({
 					}
 				],
 				requests: {
-					periodical: 10000,
+					periodical: 1000,
 				},
 			},
 		}

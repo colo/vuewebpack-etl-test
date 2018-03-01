@@ -25,40 +25,73 @@ export default new Class({
   options: {
 		
 		requests : {
-			once: [
-				{ api: { get: {uri: ''} } },
-			],
-			periodical: [
-				{ api: { get: {uri: ''} } },
-			],
+			//once: [{
+				 //get: {uri: ''} 
+			//}],
+			periodical: [{
+				get: {
+					uri: '/dashboard/_design/sort/_view/by_path',
+					headers: {
+						'Accept': 'application/json'
+					},
+					qs: {
+						
+							//startkey: ["os", this.host, "periodical",Date.now()],
+							//endkey: ["os", this.host, "periodical", Date.now() - 10000],
+							startkey: ["os", this.host, "periodical\ufff0"],
+							endkey: ["os", this.host, "periodical"],
+							limit: 1,
+							//reduce: true, //avoid geting duplicate host
+							//group: true,
+							descending: true,
+							inclusive_end: true,
+							include_docs: true
+						
+					}
+				}
+			}],
 			
 		},
 		
 		routes: {
+
+			get: [
+				{
+					path: '/:db/_design/:ddoc/_view/:vname',
+					callbacks: ['get_last_periodical'],
+					//version: '',
+				},
+				{
+					path: '/',
+					callbacks: ['get'],
+					//version: '',
+				},
+			]
 		},
 		
-		api: {
+		//api: {
 			
-			version: '1.0.0',
+			//version: '1.0.0',
 			
-			routes: {
-				get: [
-					{
-						path: ':prop',
-						callbacks: ['get'],
-						//version: '',
-					},
-					{
-						path: '',
-						callbacks: ['get'],
-						//version: '',
-					},
-				]
-			},
 			
-		},
+			
+		//},
   },
   
+  get_last_periodical: function(err, resp, body){
+		
+		if(err){
+			console.log('this.get error %o', err);
+			//this.fireEvent(this.ON_CONNECT_ERROR, err);
+		}
+		else{
+			let result = JSON.decode(resp.body)
+			//console.log('this.get %o', result);
+			for (var key in result.rows[0].doc.data) {
+				console.log(key);
+			}
+		}
+  },
   get: function(err, resp, body){
 		console.log('this.get %o', body);
 		
@@ -123,29 +156,31 @@ export default new Class({
 		
 		this.profile('root_init');//start profiling
 		
-		var first_connect = function(result){
-			console.log('first_connect %o', result);
+		//var first_connect = function(result){
+			//console.log('first_connect %o', result);
 			
 			
-			this.options.id = JSON.decode(result.body).uuid;//set ID
+			//this.options.id = JSON.decode(result.body).uuid;//set ID
 			
-			//if(Array.isArray(this.options.load)){
-				//Array.each(this.options.load, function(app){
-					//this.load(path.join(process.cwd(), app));
-				//}.bind(this));
-			//}
-			//else if(this.options.load){
-				//this.load(path.join(process.cwd(), this.options.load));
-			//}
+			////if(Array.isArray(this.options.load)){
+				////Array.each(this.options.load, function(app){
+					////this.load(path.join(process.cwd(), app));
+				////}.bind(this));
+			////}
+			////else if(this.options.load){
+				////this.load(path.join(process.cwd(), this.options.load));
+			////}
 				
-		}.bind(this);
+		//}.bind(this);
 		
-		this.addEvent(this.ON_CONNECT, function(result){
-			console.log('this.ON_CONNECT');
-			first_connect(result);
-		});
+		//this.addEvent(this.ON_CONNECT, function(){this.removeEvent(this.ON_CONNECT, first_connect)});
 		
-		this.addEvent(this.ON_CONNECT, function(){this.removeEvent(this.ON_CONNECT, first_connect)});
+		//this.addEvent(this.ON_CONNECT, function(result){
+			//console.log('this.ON_CONNECT');
+			//first_connect(result);
+		//});
+		
+		
 		
 		this.profile('root_init');//end profiling
 		
@@ -157,11 +192,27 @@ export default new Class({
 		//throw new Error();
 		try{
 			//this.os.api.get({uri: 'hostname'});
-			this.api.get({uri: ''});
+			this.get({uri: '/'}, this._first_connect.bind(this));
 		}
 		catch(e){
 			console.log(e);
 		}
+	},
+	_first_connect: function(err, result, body, opts){
+		console.log('first_connect %o', JSON.decode(result.body).uuid);
+		
+		
+		this.options.id = JSON.decode(result.body).uuid;//set ID
+		
+		//if(Array.isArray(this.options.load)){
+			//Array.each(this.options.load, function(app){
+				//this.load(path.join(process.cwd(), app));
+			//}.bind(this));
+		//}
+		//else if(this.options.load){
+			//this.load(path.join(process.cwd(), this.options.load));
+		//}
+			
 	}
 	
 });
