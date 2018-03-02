@@ -14,8 +14,8 @@ pipelines.push(new Pipeline({
 				conn: [
 					{
 						scheme: 'http',
-						//host:'192.168.0.180',
-						host:'127.0.0.1',
+						host:'192.168.0.180',
+						//host:'127.0.0.1',
 						port: 5984,
 						//module: require('./lib/os.stats'),
 						module: osStats,
@@ -32,11 +32,20 @@ pipelines.push(new Pipeline({
 	],
 	filters: [
 		function(doc, opts, next){
-			console.log('test filter', doc);
-			next(doc);
+			//console.log('test filter', doc);
+			let mem_doc = {totalmem: doc.totalmem, freemem: doc.freemem};
+			
+			next(mem_doc);
 		}
 	],
 	output: [
+		function(doc){
+			doc = JSON.decode(doc)
+			
+			if(doc.totalmem)
+				console.log(doc)//update mem widget
+				
+		}
 	]
 }))
 

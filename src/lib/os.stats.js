@@ -46,10 +46,15 @@ export default new Class({
 						},
 						qs: {
 							
-								//startkey: ["os", this.host, "periodical",Date.now()],
-								//endkey: ["os", this.host, "periodical", Date.now() - 10000],
-								startkey: ["os", app.host, "periodical\ufff0"],
-								endkey: ["os", app.host, "periodical"],
+								startkey: ["os", this.host, "periodical",Date.now()],
+								endkey: ["os", this.host, "periodical", Date.now() - 2000],
+								/**
+								 * pouchdb
+								 * */
+								//startkey: ["os", app.host, "periodical\ufff0"],
+								//endkey: ["os", app.host, "periodical"],
+								/** **/
+								
 								limit: 1,
 								//reduce: true, //avoid geting duplicate host
 								//group: true,
@@ -101,8 +106,12 @@ export default new Class({
 			
 			console.log('this.get result %o', result);
 			
-			for (var key in result.rows[0].doc.data) {
-				console.log(key);
+			if(result.rows[0]){
+				this.fireEvent('onPeriodicalDoc', [result.rows[0].doc.data, {type: 'periodical', input_type: this, app: null}]);
+				
+				//for (var key in result.rows[0].doc.data) {
+					//console.log(key);
+				//}
 			}
 		}
   },
