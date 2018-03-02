@@ -53,7 +53,8 @@ module.exports = {
     console: true,
     fs: 'empty',
     net: 'empty',
-    tls: 'empty'
+    tls: 'empty',
+    //'node-express-authorization': 'empty'
   },
   /*target: 'node',
   externals: {

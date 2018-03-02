@@ -396,8 +396,6 @@ var AppHttpClient = new Class({
 										this.fireEvent(this.ON_CONNECT, {options: merged, uri: options.uri, route: route.path, response: resp, body: body });
 									}
 
-									throw new Error('pipeline/input/poller fires an event each time: fix!');
-									
 									if(typeof(callback_alt) == 'function' || callback_alt instanceof Function){
 										var profile = 'ID['+this.options.id+']:METHOD['+verb+']:PATH['+merged.uri+']:CALLBACK[*callback_alt*]';
 										

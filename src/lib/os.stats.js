@@ -4,7 +4,14 @@
 //import 'mootools'
 
 //import App from './app/'
-import App from './app-http-client/index'
+//import App from './app-http-client/index'
+
+/**
+ * works commenting "var Authorization = require('node-express-authorization');"
+ * */
+import App from '../../node_modules/node-app-http-client/index'
+
+//const App = require('node-app-http-client')
 
 //import Vue from 'vue'
 //import VueResource from 'vue-resource'
@@ -22,6 +29,8 @@ import App from './app-http-client/index'
 export default new Class({
   Extends: App,
   
+  host: 'colo',
+  
   options: {
 		
 		requests : {
@@ -29,25 +38,27 @@ export default new Class({
 				 //get: {uri: ''} 
 			//}],
 			periodical: [{
-				get: {
-					uri: '/dashboard/_design/sort/_view/by_path',
-					headers: {
-						'Accept': 'application/json'
-					},
-					qs: {
-						
-							//startkey: ["os", this.host, "periodical",Date.now()],
-							//endkey: ["os", this.host, "periodical", Date.now() - 10000],
-							startkey: ["os", this.host, "periodical\ufff0"],
-							endkey: ["os", this.host, "periodical"],
-							limit: 1,
-							//reduce: true, //avoid geting duplicate host
-							//group: true,
-							descending: true,
-							inclusive_end: true,
-							include_docs: true
-						
-					}
+				get: function(req, next, app){//wrap it on a func, so we can call "this", as "app"
+					next({
+						uri: '/dashboard/_design/sort/_view/by_path',
+						headers: {
+							'Accept': 'application/json'
+						},
+						qs: {
+							
+								//startkey: ["os", this.host, "periodical",Date.now()],
+								//endkey: ["os", this.host, "periodical", Date.now() - 10000],
+								startkey: ["os", app.host, "periodical\ufff0"],
+								endkey: ["os", app.host, "periodical"],
+								limit: 1,
+								//reduce: true, //avoid geting duplicate host
+								//group: true,
+								descending: true,
+								inclusive_end: true,
+								include_docs: true
+							
+						}
+					})
 				}
 			}],
 			
@@ -79,6 +90,7 @@ export default new Class({
   },
   
   get_last_periodical: function(err, resp, body){
+		console.log('this.get %o', resp);
 		
 		if(err){
 			console.log('this.get error %o', err);
@@ -86,7 +98,9 @@ export default new Class({
 		}
 		else{
 			let result = JSON.decode(resp.body)
-			//console.log('this.get %o', result);
+			
+			console.log('this.get result %o', result);
+			
 			for (var key in result.rows[0].doc.data) {
 				console.log(key);
 			}
